@@ -14,3 +14,11 @@ jobs:
     steps:
       - name: helloworld
         run: echo "hello world"
+
+      - name: Comment on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Hello World
