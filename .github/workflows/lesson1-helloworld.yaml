@@ -9,7 +9,8 @@ on:
       - main
 
 jobs:
-  runs-on: ubuntu-latest
-  steps:
-    - name: helloworld
-      run: echo "hello world"
+  helloworld:
+    runs-on: ubuntu-latest
+    steps:
+      - name: helloworld
+        run: echo "hello world"
