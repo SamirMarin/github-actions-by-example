@@ -1,17 +1,17 @@
 # Terminology
-Before diving deeper into more complex github action workflows, let's take a moment to define some of the key terms used in GitHub Actions.
+Before diving deeper into more complex GitHub Action workflows, let's take a moment to define some of the key terms used in GitHub Actions.
 
 ## Workflow
-This is the name given to the automation process, workflows are defined in YAML files under `.github/workflow/` directory. 
+A "workflow" refers to the automation process. Workflows are defined in YAML files and placed in the `.github/workflow/` directory in your repository.
 
-A workflow is comprised of one or more jobs, which are executed in parallel by default. Each job contains one or more steps, which are executed sequentially by default.
+Each workflow is made up of one or more "jobs", which are executed in parallel by default. Each job is then broken down into one or more "steps", which are executed sequentially by default.
 
-For a workflow to run, it must be triggered by an event. There are various types of events, most commonly `push` and `pull_request` trigger workflows.
+In order for a workflow to run, it must be triggered by an "event". Events can range from things like a `push` to the repository or a `pull_request`.
 
 ## Triggers
-triggers are responsible for starting a workflow. Triggers are defined in the `on` section of a workflow file.
+"Triggers" are what initiate a workflow. They are defined in the `on` section of a workflow file.
 
-For example, to define a trigger that starts a workflow when a pull request is created or updated, you would use the following syntax:
+For example, to set a trigger that starts a workflow when a pull request is created or updated, you would use the following syntax:
 
 ```yaml
 on:
@@ -19,16 +19,16 @@ on:
     branches:
       - main
 ```
-This trigger will ensure anytime a pull request based on the `main` branch is created or updated, the workflow will run.
+This trigger will start the workflow anytime a pull request is created or updated that's based on the `main` branch.
 
-There are number of available triggers, some of the most common used ones including `push`, `pull_request`, `workflow_dispatch`, `repository_dispatch` and `label`. For more details on triggers, see the [GitHub Actions documentation](https://docs.github.com/en/actions/reference/events-that-trigger-workflows).
+There are many different types of triggers, including `push`, `pull_request`, `workflow_dispatch`, `repository_dispatch`, and `schedule`, among others. In this course, we'll primarily focus on the `push` and `pull_request` triggers.
 
-In this course we will focus mainly on `push` and `pull_request` triggers, as these are the most commonly used triggers.
+More details on different types of triggers can be found in the [GitHub Actions documentation](https://docs.github.com/en/actions/reference/events-that-trigger-workflows).
 
 ## Jobs
-A job is a collection of steps that are executed on the same runner. By default, jobs are executed in parallel, but you can configure them to run sequentially.
+A "job" is a set of steps that are executed on the same runner. Jobs are run in parallel by default, but can be configured to run sequentially.
 
-let's start of with the minimum requirement for a job definition:
+Here's a simple example of how to define a job:
 
 ```yaml
 jobs:
@@ -39,26 +39,26 @@ jobs:
         run: echo "Hello world"
 ```
 
-All jobs within a workflow definition are defined under the `jobs` section. Each job must have a unique name, in the above example the job name is `build`. Each job must specify which runners it will run on, in the above example the job will run on the `ubuntu-latest` runner. Finally, each job must contain one or more steps, in the above example the job contains a single step that prints `Hello world` to the console.
+In this example, `build` is the unique name of the job. It will run on the `ubuntu-latest` runner and contains a single step that prints "Hello, world!" to the console.
 
 ### Runners
-Runners are the machines that execute the jobs. Runners are defined in the `runs-on` section of a job definition.
+"Runners" are the virtual machines that execute the jobs. They are specified in the `runs-on` field of a job.
 
-The easiest way to get up and running is with standard Github-hosted runners, which are [free to use in public repositories](https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions). There are a number of different runners available, including `ubuntu-latest`, `windows-latest` and `macos-latest`. For a more details on Github-hosted runner see [using Github-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#using-a-github-hosted-runner).
-Self-hosted runners are also an option, we will discuss self-hosted runners in more detail in a later chapter. For now you just need to know that self-hosted runners are machines that you manage and run the Github Actions runner application on. For more details on self-hosted runners see [using self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners).
+There are several types of Github-hosted runners available, including `ubuntu-latest`, `windows-latest`, and `macos-latest`, among others. You can also use self-hosted runners, which are machines that you manage and on which the GitHub Actions runner application is installed. We'll discuss [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) in more detail in a later chapter.
+
+One important thing to note is Standard Github-hosted runners are [free to use in public repositories](https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions)
 
 ### Steps
-Steps are the individual tasks that make up a job. Steps are defined in the `steps` section of a job definition.
+"Steps" are the individual tasks that make up a job. They are defined in the `steps` section of a job.
 
-each step is comprised of a number of properties, the most commonly used properties are `name` and `run`. The `name` property is used to give the step a name, this is useful for debugging purposes. The `run` property is used to define the command that will be executed by the step.
-when using community actions, the `uses` property is used instead of the `run` property. The `uses` property is used to specify the action that will be executed by the step.
+Each step has several properties. The most commonly used ones are `name`, which gives the step a name (useful for debugging), and `run`, which defines the command to be executed by the step. When using community actions, you will use the `uses` property to specify the action to be executed.
 
-For example to use the `actions/checkout@v2` action to checkout the repository, you would use the following syntax:
+Here's an example of how to use the community [actions/checkout](https://github.com/actions/checkout) action to checkout the repository:
 
 ```yaml
 steps:
   - name: Checkout repository
-    uses: actions/checkout@v2
+    uses: actions/checkout@v3
 ```
 
-we will discuss more step properties as we work through various examples, for now this is enough to get started with more involved examples.
+We will cover additional properties of steps as we go through more examples. For now, this should be enough to get you started with more complex examples.
