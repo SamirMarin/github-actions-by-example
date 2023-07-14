@@ -41,7 +41,24 @@ jobs:
 
 All jobs within a workflow definition are defined under the `jobs` section. Each job must have a unique name, in the above example the job name is `build`. Each job must specify which runners it will run on, in the above example the job will run on the `ubuntu-latest` runner. Finally, each job must contain one or more steps, in the above example the job contains a single step that prints `Hello world` to the console.
 
-### runners
+### Runners
 Runners are the machines that execute the jobs. Runners are defined in the `runs-on` section of a job definition.
 
 The easiest way to get up and running is with standard Github-hosted runners, which are [free to use in public repositories](https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions). There are a number of different runners available, including `ubuntu-latest`, `windows-latest` and `macos-latest`. For a more details on Github-hosted runner see [using Github-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#using-a-github-hosted-runner).
+Self-hosted runners are also an option, we will discuss self-hosted runners in more detail in a later chapter. For now you just need to know that self-hosted runners are machines that you manage and run the Github Actions runner application on. For more details on self-hosted runners see [using self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners).
+
+### Steps
+Steps are the individual tasks that make up a job. Steps are defined in the `steps` section of a job definition.
+
+each step is comprised of a number of properties, the most commonly used properties are `name` and `run`. The `name` property is used to give the step a name, this is useful for debugging purposes. The `run` property is used to define the command that will be executed by the step.
+when using community actions, the `uses` property is used instead of the `run` property. The `uses` property is used to specify the action that will be executed by the step.
+
+For example to use the `actions/checkout@v2` action to checkout the repository, you would use the following syntax:
+
+```yaml
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v2
+```
+
+we will discuss more step properties as we work through various examples, for now this is enough to get started with more involved examples.
