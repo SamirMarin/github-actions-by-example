@@ -11,7 +11,7 @@ on:
     branches:
       - master
   pull_request:
-      branches:
+    branches:
       - master
           
     
@@ -35,7 +35,7 @@ on:
     branches:
       - master
   pull_request:
-      branches:
+    branches:
       - master
       
 jobs:
