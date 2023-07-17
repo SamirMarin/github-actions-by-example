@@ -1,0 +1,28 @@
+name: Hello World
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  hello-world:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello world
+        id: hello-world
+        run: |
+          hello_world="Hello world"
+          echo "value=${hello_world}" >> $GITHUB_OUTPUT
+          echo $hello_world
+
+      - name: Comment on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ${{ steps.hello-world.outputs.value }}
