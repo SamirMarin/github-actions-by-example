@@ -9,10 +9,10 @@ To make this concept more relatable, let's take the well-known "Hello World" exa
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
           
     
 jobs:
@@ -33,10 +33,10 @@ For instance, imagine extending the previous "Hello World" example to include co
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
       
 jobs:
   hello-world:
