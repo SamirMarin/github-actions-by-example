@@ -22,7 +22,7 @@ jobs:
       - name: Hello world
         run: echo "Hello world"
 ```
-The complete source code for this example can be found in this repo, under: [.github/workflows/s1_1-hello-world.yaml]()
+The complete source code for this example can be found in this repo, under: [.github/workflows/s1_1-hello-world.yaml](https://github.com/SamirMarin/github-actions-by-example/blob/main/.github/workflows/s1_1-hello-world.yaml)
 
 ## Framework
 In computing, a framework is a set of tools that are used to develop, manage, or run a specific type of software solution. For GitHub Actions, the framework is the YAML syntax employed to define automation workflows. The framework also comprises a supportive community offering a wide range of ready-to-use actions that can be incorporated into your workflows.
