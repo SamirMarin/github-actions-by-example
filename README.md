@@ -10,9 +10,9 @@ Welcome to "GitHub Actions by Example", a step-by-step tutorial to master GitHub
 
 ## Current Chapters
 ### Chap1: Introduction to GitHub Actions
-- section1_1: What is GitHub Actions
-- section1_2: GitHub Actions terminology
-- section1_3: Build a simple but useful GitHub Actions workflow
+- section1: What is GitHub Actions
+- section2: GitHub Actions terminology
+- section3: Build a simple but useful GitHub Actions workflow
 
 ## Work in Progress
 This resource is continually being expanded and updated. More chapters will be added in the future to cover more aspects of GitHub Actions. Please stay tuned for updates!
