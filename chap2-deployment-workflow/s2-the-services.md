@@ -1,40 +1,40 @@
 # The services
-In order to demonstrate the deployment workflow, we will create two simple golang http services. The workout-management-service and the user-management-service.
+To illustrate the deployment workflow, we will develop two basic Golang HTTP services: the workout-management-service and the user-management-service.
 
-The implementation details of both services will be very similar, so we will only cover in detail the implementation of one service: the workout-management-service.
+Both services have similar implementation details; therefore, we will focus primarily on the implementation of one service, the workout-management-service, to avoid redundancy.
 
 ## The workout-management-service
-The workout-management-service is a simple http service that exposes a REST API for managing workouts - mainly for creating and querying the workouts created.
+This service is a straightforward HTTP service providing a REST API to manage workouts. Its primary functions include creating workouts and querying the created workouts.
 
 ## The user-management-service
-The user-management-service is a simple http service that exposes a REST API for managing users - mainly for creating and querying the users created.
+Similarly, the user-management-service is an uncomplicated HTTP service featuring a REST API designed for user management. This service primarily handles creating users and querying the users that have been created.
 
 ## The implementation details
 
 ### Creating the golang project
 
-Let's start by creating our golang project. To start of, let's create a directory for our project and initialize a go module.
+We begin by setting up our Golang project. The first step is to create a project directory and initialize a Go module within it.
 
 ```bash
 # create directory
 mkdir workout-management-service
 
-# in this cause we will use github.com/samirmarin/workout-management-service as the module name
+# here, we'll use 'github.com/samirmarin/workout-management-service' as the module name
 go mod init github.com/samirmarin/workout-management-service
 ```
 
-In this case we used my github account along with the reponame as the module name. This is really only important when we want to import pkgs from this project into other projects. We will not be doing this in this case, so you could name the module whatever you want.
+In this instance, the module name incorporates my GitHub account and the repository name. This naming convention is particularly relevant for importing packages from this project into others. However, since we won’t be doing such imports in this project, feel free to choose any module name you prefer.
 
-Running this command will create a go.mod file in the root of our project, a go.sum file will be also be created when we start importing other pkgs into our project.
+Executing this command will generate a go.mod file in the project's root directory. Additionally, a go.sum file will also be created as we start importing external packages into our project.
 
 ### The http server
-We will use [echo](https://echo.labstack.com/) as our http server framework. To install echo we will run the following command from the root of our project.
+For our HTTP server framework, we will utilize [Echo](https://echo.labstack.com/). To install Echo, execute the following command from the root directory of our project:
 
 ```bash
 go get github.com/labstack/echo/v4
 ```
 
-let's now create a main.go file in the root of our project and add the following code in order to create a simple http server that listens on port 1323.
+Next, create a main.go file in the root directory of our project. Insert the code below to set up a basic HTTP server that listens on port 1323:
 
 ```go
 package main
@@ -49,26 +49,26 @@ func main() {
 }
 ```
 
-we can build and run this server by running the following commands from the root of our project.
+To build and run this server, use the following commands from the root of our project:
 
 ```bash
 go build -o workout-management-service
 ./workout-management-service
 ```
 
-This will run a server on port 1323. You can test the server by running the following command.
+Executing these commands will activate the server on port 1323. To test the server, you can use the command:
 
 ```bash
 curl localhost:1323
 ```
-This should return a 404 response, since we have no routes configured.
+Since we haven’t configured any routes yet, this should return a 404 response.
 
 ### Adding a routes
 
 #### The create route
-Let's add a route for creating a workout. We will add a route that listens for POST requests on the /create endpoint.
+Let's implement a route for creating a workout. We'll set up an endpoint to handle POST requests at /create.
 
-To do this we will add a create function to our main.go file.
+We'll modify our main.go file to include a create function:
 
 ```go
 package main
@@ -90,7 +90,7 @@ func create(c echo.Context) error {
 }
 ```
 
-We can now test this route by running the following command.
+To test this new route, execute these commands:
 
 ```bash
 go build -o workout-management-service
@@ -98,18 +98,62 @@ go build -o workout-management-service
 curl -v -X POST localhost:1323/create
 ```
 
-This will return a 200 response, but currently this route does nothing other than print out "Workout created" to the console.
+This should result in a 200 response, indicating success. Currently, this route simply returns a message, "Workout created."
 
-#### Creating a workout pkg
-Let's create a pkg that will be responsible for creating a workout. We will create a pkg called workout and add a Create Workout function to it.
+#### The get route
+Adding the get route follows a similar process to the create route. We'll add a route that listens for POST requests at the /get endpoint.
 
-To this wil will add an internal/workout directory to our project and create a workout.go file in it.
+Update main.go as follows:
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+)
+
+func main() {
+	e := echo.New()
+    e.POST("/create", create)
+    e.POST("/get", get)
+	e.Logger.Fatal(e.Start(":1323"))
+}
+
+func create(c echo.Context) error {
+	return c.String(http.StatusOK, "Workout created")
+}
+
+func get(c echo.Context) error {
+	return c.JSON(http.StatusOK, "Getting workout")
+}
+
+```
+In this case, we use a POST request for the get route to enable passing a request body. This body will contain the owner's name and the name of the workout we wish to retrieve.
+
+To test this route, use the following commands:
+
+```bash
+go build -o workout-management-service
+./workout-management-service
+curl -v -X POST localhost:1323/get
+```
+
+This will also return a 200 response, but like the create route, it currently only prints out "Getting workout."
+
+### Creating a workout pkg
+Let's develop a package responsible for workout creation. We'll name this package workout and include a function for creating workouts.
+
+First, set up the necessary directory structure and files:
 
 ```bash
 mkdir -p internal/workout
 touch internal/workout/workout.go
 ```
-To start lets create the struct that will represent a workout.
+
+#### Defining the Workout Structure
+Start by defining the Workout struct in workout.go:
 
 ```go
 package workout
@@ -136,7 +180,9 @@ type Exercise struct {
 
 ```
 
-We can now add a CreateWorkout function to our workout.go file. For now we will simply have it print out the workout that was created.
+#### Adding Create and Get Functions
+
+Now, add the CreateWorkout and GetWorkout functions to handle creating and querying workouts:
 
 ```go
 package workout
@@ -169,10 +215,16 @@ func (w *Workout) CreateWorkout() error {
 	return nil
 }
 
+// GetWorkout gets a workout from db
+func (w *Workout) GetWorkout() error {
+	fmt.Println(w)
+	return nil
+}
+
 ```
 
-Now that we have defined our workout struct and function we can call with a workout struct, we can now call this function from our create route function in main.
-We will use the echo.Context to get the request body and unmarshal it into a workout struct.
+#### Integrating with with our routes
+In the main package, update route handling to use these new functions. We'll use echo.Context to parse the request body into a Workout struct:
 
 ```go
 
@@ -188,6 +240,7 @@ import (
 func main() {
 	e := echo.New()
 	e.POST("/create", create)
+	e.POST("/get", create)
 	e.Logger.Fatal(e.Start(":1323"))
 }
 
@@ -203,9 +256,25 @@ func create(c echo.Context) error {
 
 	return c.String(http.StatusOK, "Workout created")
 }
+
+func get(c echo.Context) error {
+	workout := workout.Workout{}
+	if err := c.Bind(&workout); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	err := workout.GetWorkout()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, workout)
+}
+
 ```
 
-We can now test this route by running the following command.
+#### Testing the Routes
+
+You can test these routes with the following curl commands:
 
 ```bash
 go build -o workout-management-service
@@ -236,20 +305,30 @@ curl -X POST http://localhost:1323/create \
   ]
 }'
 ```
+```bash
+go build -o workout-management-service
+./workout-management-service
+curl -X POST http://localhost:1323/create \
+-H "Content-Type: application/json" \
+-d '{
+  "owner": "samir@gmail.com",
+  "name": "Run The Interval",
+ }'
+```
 
-Right now this will simply print out the workout that was created to the console. So not a lot is really happening here. Other than we can validate that the post request body we are passing in our curl is getting deserialize into a workout struct.
-Next up we will add logic to save the workout to a database.
+Currently, these routes will simply print the deserialized Workout structs to the console. This allows us to verify that the POST request bodies are being correctly deserialized into Workout structs.
 
-#### Adding the workout to a database
-For our database we will use Amazon local dynamodb, Amazon dynamodb a popular NoSql db used for microservices when running in AWS cloud. We will therefore use dynamodb local to simulate a dynamodb instance running in the cloud. Using local dynamodb is a common practice for local development. It will also allow us to mic the dynamodb instance in our github action test workflow.
+### The Database
+For our database, we will use Amazon DynamoDB Local, a popular NoSQL database choice for microservices in AWS cloud environments. DynamoDB Local simulates a DynamoDB instance in the cloud, making it an ideal choice for local development and testing in GitHub Actions workflows.
 
-In our example we have choosen to use dynamodb because it is a common industry practice to use dynamodb for microservices running in AWS cloud. But another database could easily be used instead.
+We choose DynamoDB due to its widespread use in industry, particularly for microservices hosted on AWS. However, it's worth noting that other databases could be substituted depending on specific requirements or preferences.
 
-##### dynamodb package
+#### dynamodb package
 
-Lets start of by creating a dynamodb package in our internal directory. We will create a dynamodb.go file in the internal/dynamodb directory. This package will be a copy and paste across both services, in a later section we will show how we can seperate this package into its own repo and import it into both services.
+We'll start by creating a DynamoDB package in our internal directory. This involves setting up a dynamodb.go file in the internal/dynamodb directory. This package will initially be used in both services, but later we'll explore how to extract it into its own repository for better reusability.
 
-The first thing we will do is add dynamodb client.
+##### DynamoDB Client
+Here's the initial setup for our DynamoDB client:
 
 ```golang
 package dynamodb
@@ -293,11 +372,10 @@ func NewClient(tableName string) *Client {
 }
 
 ```
-For our use case we will only be working the dynamodb local, but we ensure the client is also configure to work with non local dynamodb instances.
+Our client is designed to work with both local and cloud instances of DynamoDB. By default, it connects to a local instance if the DYNAMODB_LOCAL_ENDPOINT environment variable is set, or to a cloud instance based on AWS credentials otherwise.
 
-What we do here is we create a new dynamodb instance that connects to our local dynamodb instance(we will go over how to setup dynamodb local shortly). If the DYNAMODB_LOCAL_ENDPOINT environment variable is not set, we will connect to dynamodb via the defaults provided by aws credentials configured on the machine running the service.
-
-Once we have our client we can no add functions that will operate on out dynamodb database. In our case we will add a StoreItem and GetItem function.
+##### Storable Interface and Functions
+Let's define a Storable interface and add StoreItem and GetItem functions to interact with DynamoDB:
 
 ```golang
 ...
@@ -332,10 +410,11 @@ func (c *Client) GetItem(itemToSearch Storable) (error, *dynamodb.GetItemOutput)
 }
 
 ```
+We use the Storable interface to keep our functions generic and reusable. This allows our Workout struct to implement methods that convert it to DynamoDB-compatible formats.
 
-In our case we keep our functions very generic, we use Storable interface to our functions, allowing us to pass the responsibility of converting our workout struct to a dynamodb attribute to the workout struct itself. This allows us to keep our dynamodb package generic and reusable across multiple services.
-
-Lets now add the ToDynamoDbAttribute and ToDynamoDbItemInput functions to our workout struct. This ensures that our workout struct implements the Storable interface.
+##### Integrating with Workout Struct
+Next, integrate these methods with our Workout struct:
+Add the ToDynamoDbAttribute and ToDynamoDbItemInput functions to our workout struct. This ensures that our workout struct implements the Storable interface.
 
 ```golang
 package workout
@@ -411,9 +490,12 @@ func (w *Workout) ToDynamoDbItemInput() *awsDynamoDb.GetItemInput {
 
 ```
 
-What these two functions do is ensure we can convert our workout struct to a dynamodb attribute and a dynamodb item input. The dynamodb attribute is what we will use to store our workout in the database, and the dynamodb item input is what we will use to search for our workout in the database.
+These methods ensure that our Workout struct can be stored and retrieved from DynamoDB. By converting our workout struct to a dynamodb attribute and a dynamodb item input. 
+- the dynamodb attribute is what we will use to store our workout in the database 
+- the dynamodb item input is what we will use to search for our workout in the database.
 
-We can now get our CreateWorkout and GetWorkout functions in our workout pkg to store and retrieve workouts from the database instead of simply printing to console.
+##### Modifying Workout Functions
+Update the CreateWorkout and GetWorkout functions in the workout package to interact with the database:
 
 ```golang
 ...
@@ -439,16 +521,16 @@ func (w *Workout) GetWorkout() error {
 }
 ```
 
-with this in place we can now create a workout and retrieve it from the database. But before we can do this we need to have a dynamodb instance running locally and create a workout table.
+With these modifications, our application can now create and retrieve workouts from the database.
 
-##### Running dynamodb local and create table
+#### Setting Up DynamoDB Local
 
-```bash
+To run DynamoDB locally, we'll use Docker Compose:
 
-To install dynamodb local we will use docker compose. We will create a docker-compose.yaml file in the root of our project and add the following code.
 ```bash
 touch docker-compose.yaml
 ```
+Add the following configuration to docker-compose.yaml:
 
 ```yaml
 version: '3.8'
@@ -464,22 +546,24 @@ services:
     working_dir: /home/dynamodblocal
 ```
 
-To create the local dynamodb instance we will run the following command from the root of our project.
+Start the local DynamoDB instance:
 
 ```bash
 docker-compose up -d
 ```
 
-This will create a dynamodb instance running on port 8000. We can now create a workout table in our local dynamodb instance by running a bash script.
+This will launch a DynamoDB instance on port 8000.
 
-lets create a create-table.sh file under scripts/dynamodb directory.
+#### Creating a DynamoDB Table
+
+Create a create-table.sh script to set up the DynamoDB table:
 
 ```bash
 mkdir -p scripts/dynamodb
 touch scripts/dynamodb/create-table.sh
 ```
 
-In the file we will add the following code.
+Add the following script to create the Workout table:
 ```bash
 #!/bin/bash
 
@@ -500,17 +584,18 @@ aws dynamodb create-table \
     --endpoint-url http://localhost:8000
 ```
 
-This creates a table called Workout with a hash key of Owner and a range key of Name. We will use the Owner and Name as the primary key for our workout table.
-In this case our primary key is composed of partition key and a sort key. The partition key is Owner and the sort key is Name. This means that we can have multiple workouts with the same Owner, but each workout must have a unique Name.
-For more details on dynamodb primary keys see [here](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey).
-
-Run the script to create the table
+Execute the script to create the table:
 ```bash
 chmod +x scripts/dynamodb/create-table.sh
 ./scripts/dynamodb/create-table.sh
 ```
 
-#### Testing the create and get routes end to end
+This script sets up a Workout table with Owner and Name as the primary key components. The Owner attribute serves as the partition key, and Name as the sort key, allowing multiple workouts per owner with unique names.
+For more details on dynamodb primary keys see [here](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey).
+
+-----> xxxxxx 
+
+### Testing the create and get routes end to end
 We can now test our create and get workout functionality end to end.
 
 Lets rebuild our service and run it.
