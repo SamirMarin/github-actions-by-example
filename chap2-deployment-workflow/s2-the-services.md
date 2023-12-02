@@ -595,17 +595,19 @@ For more details on dynamodb primary keys see [here](https://docs.aws.amazon.com
 
 -----> xxxxxx 
 
-### Testing the create and get routes end to end
-We can now test our create and get workout functionality end to end.
+### Testing the Create and Get Routes End to End
+Now that we have integrated our service with the DynamoDB database, it's time to test the create and get workout functionalities.
 
-Lets rebuild our service and run it.
+#### Rebuilding and Running the Service
+First, rebuild and run the service:
 
 ```bash
 go build -o workout-management-service
 ./workout-management-service
 ```
+#### Testing the Create Route
 
-We can now create a workout by running the same curl we ran previously.
+To create a new workout, execute the following curl command:
 
 ```bash
 go build -o workout-management-service
@@ -636,9 +638,10 @@ curl -X POST http://localhost:1323/create \
   ]
 }'
 ```
-expect this time we will actually store the workout in the database.
+This command should now store the workout details in the database.
 
-We can then test the get route by running the following curl.
+#### Testing the Get Route
+To retrieve the workout you just created, use the following curl command:
 
 ```bash
 go build -o workout-management-service
@@ -651,8 +654,4 @@ curl -X POST http://localhost:1323/create \
  }'
 ```
 
-which will grab the workout we just created from the database.
-
-
-
-
+This request should return the details of the "Run The Interval" workout from the database.
