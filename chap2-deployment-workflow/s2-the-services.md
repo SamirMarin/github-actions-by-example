@@ -1,15 +1,10 @@
 # The services
-To illustrate the deployment workflow, we will develop two basic Golang HTTP services: the workout-management-service and the user-management-service.
+To illustrate the deployment workflow, we will develop two basic Golang HTTP services: the [workout-management-service](https://github.com/SamirMarin/workout-management-service) and the [user-management-service](https://github.com/SamirMarin/user-management-service).
 
-Both services have similar implementation details; therefore, we will focus primarily on the implementation of one service, the workout-management-service, to avoid redundancy.
+Both services have similar implementation details; therefore, we will focus primarily on the implementation of one service, the workout-management-service.
 
 ## The workout-management-service
 This service is a straightforward HTTP service providing a REST API to manage workouts. Its primary functions include creating workouts and querying the created workouts.
-
-## The user-management-service
-Similarly, the user-management-service is an uncomplicated HTTP service featuring a REST API designed for user management. This service primarily handles creating users and querying the users that have been created.
-
-## The implementation details
 
 ### Creating the golang project
 
@@ -63,7 +58,7 @@ curl localhost:1323
 ```
 Since we haven’t configured any routes yet, this should return a 404 response.
 
-### Adding a routes
+### Adding routes
 
 #### The create route
 Let's implement a route for creating a workout. We'll set up an endpoint to handle POST requests at /create.
@@ -143,7 +138,7 @@ curl -v -X POST localhost:1323/get
 This will also return a 200 response, but like the create route, it currently only prints out "Getting workout."
 
 ### Creating a workout pkg
-Let's develop a package responsible for workout creation. We'll name this package workout and include a function for creating workouts.
+Let's develop a package responsible for workout creation and retrieval. We'll name this package workout and include a functionx for creating workouts and getting workouts.
 
 First, set up the necessary directory structure and files:
 
@@ -276,9 +271,16 @@ func get(c echo.Context) error {
 
 You can test these routes with the following curl commands:
 
+first rebuild and run the service:
+
 ```bash
 go build -o workout-management-service
 ./workout-management-service
+```
+
+then run the follwoing curl commands:
+
+```bash
 curl -X POST http://localhost:1323/create \
 -H "Content-Type: application/json" \
 -d '{
@@ -306,8 +308,6 @@ curl -X POST http://localhost:1323/create \
 }'
 ```
 ```bash
-go build -o workout-management-service
-./workout-management-service
 curl -X POST http://localhost:1323/create \
 -H "Content-Type: application/json" \
 -d '{
@@ -412,9 +412,9 @@ func (c *Client) GetItem(itemToSearch Storable) (error, *dynamodb.GetItemOutput)
 ```
 We use the Storable interface to keep our functions generic and reusable. This allows our Workout struct to implement methods that convert it to DynamoDB-compatible formats.
 
-##### Integrating with Workout Struct
-Next, integrate these methods with our Workout struct:
-Add the ToDynamoDbAttribute and ToDynamoDbItemInput functions to our workout struct. This ensures that our workout struct implements the Storable interface.
+##### Integrating with Workout pkg
+Next, integrate these methods with our Workout pkg:
+Add the ToDynamoDbAttribute and ToDynamoDbItemInput functions to our workout pkg. This ensures that our workout pkg implements the Storable interface.
 
 ```golang
 package workout
@@ -593,8 +593,6 @@ chmod +x scripts/dynamodb/create-table.sh
 This script sets up a Workout table with Owner and Name as the primary key components. The Owner attribute serves as the partition key, and Name as the sort key, allowing multiple workouts per owner with unique names.
 For more details on dynamodb primary keys see [here](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey).
 
------> xxxxxx 
-
 ### Testing the Create and Get Routes End to End
 Now that we have integrated our service with the DynamoDB database, it's time to test the create and get workout functionalities.
 
@@ -610,8 +608,6 @@ go build -o workout-management-service
 To create a new workout, execute the following curl command:
 
 ```bash
-go build -o workout-management-service
-./workout-management-service
 curl -X POST http://localhost:1323/create \
 -H "Content-Type: application/json" \
 -d '{
@@ -644,8 +640,6 @@ This command should now store the workout details in the database.
 To retrieve the workout you just created, use the following curl command:
 
 ```bash
-go build -o workout-management-service
-./workout-management-service
 curl -X POST http://localhost:1323/create \
 -H "Content-Type: application/json" \
 -d '{
@@ -655,3 +649,10 @@ curl -X POST http://localhost:1323/create \
 ```
 
 This request should return the details of the "Run The Interval" workout from the database.
+
+## The user-management-service
+The user-management-service, much like the workout-management-service, is an HTTP service that provides a REST API for managing user data. Its core functionalities include creating user profiles and retrieving information about existing users.
+
+Given that the implementation of the user-management-service closely mirrors that of the workout-management-service, we will not repeat the detailed discussion here. Instead, if you are interested in understanding its implementation specifics, you are encouraged to refer to the dedicated [user-management-service](https://github.com/SamirMarin/user-management-service) repo.
+
+
