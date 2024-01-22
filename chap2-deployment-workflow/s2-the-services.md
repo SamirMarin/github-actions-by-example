@@ -650,6 +650,59 @@ curl -X POST http://localhost:1323/create \
 
 This request should return the details of the "Run The Interval" workout from the database.
 
+#### Unit tests
+Our services need to be equipped with a set of tests that can be executed with the go test. To demonstrate this, we will craft a few basic unit tests.
+
+We will focus our unit testing on four key functions:
+- ToDynamoDbAttribute
+- ToDynamoDbItemInput
+- CreateWorkout
+- GetWorkout
+
+While covering these functions does not exhaustively test all functionality of the service, it provides a fundamental level of coverage. These tests serve as a representative sample to illustrate the process of unit testing.
+
+Reference [workout_test.go](https://github.com/SamirMarin/workout-management-service/blob/main/internal/workout/workout_test.go) for implementation details.
+
+All tests will utilize Go's standard testing package. The core principle of each test is to validate the expected output of a function or series of functions. This pattern will be consistently applied across all unit tests.
+
+##### ToDynamoDbAttribute unit test
+For the ToDynamoDbAttribute unit test, we will invoke the function with a predefined Workout struct and verify that the output aligns with our expectations:
+
+```go
+func TestToDynamoDbAttribute(t *testing.T) {
+	workout := &Workout{
+		// ... Initialize workout struct
+	}
+	dynamodbAttribute := workout.ToDynamoDbAttribute()
+
+	expectedDynamodbAttribute := map[string]*awsDynamoDb.AttributeValue{
+		// ... Expected DynamoDB attribute map
+	}
+
+	if !reflect.DeepEqual(dynamodbAttribute, expectedDynamodbAttribute) {
+		t.Errorf("ToDynamoDbAttribute() = %v, want %v", dynamodbAttribute, expectedDynamodbAttribute)
+	}
+}
+```
+
+##### ToDynamoDbItemInput unit
+The ToDynamoDbItemInput test follows a similar structure. We'll invoke ToDynamoDbItemInput and validate that the function's output matches our expected result.
+
+##### CreateWorkout and GetWorkout unit test
+The CreateWorkout and GetWorkout functions interact with the DynamoDB instance, requiring a running local instance of DynamoDB (facilitated by Docker Compose). These tests are be designed to:
+
+1. Use CreateWorkout to store a Workout in DynamoDB, verifying that no errors occur.
+2. Retrieve the same Workout using GetWorkout, ensuring the fetched data matches the stored data.
+
+This process not only tests the functionality of each method but also validates their interaction with the database.
+
+##### Running the unit test
+To execute the unit tests, ensure that the local DynamoDB instance is active and the necessary tables are set up. Run the tests using the following command in the terminal:
+
+```yaml
+go test -v ./...
+```
+
 ## The user-management-service
 The user-management-service, much like the workout-management-service, is an HTTP service that provides a REST API for managing user data. Its core functionalities include creating user profiles and retrieving information about existing users.
 
