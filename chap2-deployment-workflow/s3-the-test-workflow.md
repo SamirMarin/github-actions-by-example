@@ -49,7 +49,7 @@ Before our action job can sucessfully run the test we will need to run few set-u
 - Run docker compose to get the dynamodb db up and running using regular bash command `docker compose up`
 - Ensure the tables required for the unit test are created in the dynamodb by running the create-table script under [scripts/dynamodb/create-table.sh](https://github.com/SamirMarin/workout-management-service/blob/main/scripts/dynamodb/create-table.sh)
 
-once we have run these steps we should then be able to successfully run `go -v test .\...`
+once we have run these steps we should then be able to successfully run `go -v test ./...`
 
 putting it all together into the test workflow:
 
@@ -77,9 +77,15 @@ jobs:
         run: docker compose up -d
       - name: Run dynamodb set-up scripts
         run: ./scripts/dynamodb/create-table.sh
+        env:
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
       - name: test
         run: |
-          go test -v .\...
+          go test -v ./...
+        env:
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
 ```
 
 lets now commit this and push up to our branch, we can validate it worked by referencing the github actions consule.
