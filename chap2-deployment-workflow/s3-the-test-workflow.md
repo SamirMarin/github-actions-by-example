@@ -1,18 +1,20 @@
 # The test workflow
-The test workflow is designed to maintain the integrity and reliability of our service by automatically running a suite of unit/integration tests. These tests are triggered whenever a Pull Request (PR) is created or merged. This ensures that any new code contributions or changes to the existing codebase do not disrupt the functionality of the service.
+The test workflow is an essential component of our CI/CD pipeline, designed to preserve the integrity and reliability of our services by automatically executing a suite of unit and integration tests. These tests are activated upon every Pull Request (PR) creation or merge into the main branch.
 
 ## Creating the workflow
-Each of our service the workout-management-service and the user-management-service will run a test workflow, given the similarities of each workflow we will only cover the implemenatoins deatils in one service given the next service will more or less be a copy paste.
+Given the structural resemblance between our services, namely the workout-management-service and the user-management-service, the test workflow for each will be quite similar. Therefore, we'll focus on the implementation details for one service, understanding that the process for the other would be almost identical.
 
-The idea of the test workflow will be to execute `go test -v ./...` automatically everytime someone create a PR/merge a PR the service repos.
+The objective of the test workflow is to automatically execute `go test -v ./...` every time a PR is created or merged into the service repositories.
 
-Lets first start by creating a test.yaml workflow file under .github/workflows/ directory in the workout-management-service repo.
+### Setting up the Workflow File
+We start by creating a test.yaml workflow file under the .github/workflows/ directory in the workout-management-service repository:
 
 ```bash
-mkdir .github/workflows/test.yaml
+mkdir -p .github/workflows/
+touch .github/workflows/test.yaml
 ```
 
-Let's start by setting up a basic skeloton of the workflow, to start we will set a workflow that triggers on PR and pushes to main and simply print to console "testing"
+We'll then define a basic skeleton for our workflow, initially setting it to trigger on PRs and pushes to the main branch, and performing a simple echo command:
 
 ```yaml
 name: testing
@@ -33,25 +35,24 @@ jobs:
       - name: test
         run: echo "testing"
 ```
+Push this initial setup and create a PR against the main branch to validate the workflow syntax. The actions console should display "testing" for the test job.
 
-To validate the workflow syntax is correct lets push this and create a PR against main, in the actions console we should see "testing" being printed for the test job
+### Implementing the Test Workflow
+To transition from a skeleton to a functioning test workflow, we need to execute a series of setup steps before our action job can successfully run the tests:
 
-Now that we have a basic skeloton or our testing actions lets create a job that actual runs our unit test, to do this we need our actions to simpy run:
+Checkout Step: Fetch the repository code into the action runner using the actions/checkout@v4.
+Setup-Go: Install Go in the action runner using the actions/setup-go@v5.
+Docker Compose: Launch the local DynamoDB instance needed for the tests using docker compose up.
+Create Tables: Ensure the required tables are created in the local DynamoDB instance by executing the create-table.sh script from scripts/dynamodb.
 
-```bash 
-go test -v .\...
-```
+- Checkout Step: Fetch the repository code into the action runner using [actions/checkout@v4](https://github.com/actions/checkout)
+- Setup-Go: Install Go in the action runner using the [actions/setup-go@v5](https://github.com/actions/setup-go)
+- Docker Compose: Launch the local DynamoDB instance needed for the tests using `docker compose up`
+- Create Tables: Ensure the required tables are created in the local DynamoDB instance by executing [scripts/dynamodb/create-table.sh](https://github.com/SamirMarin/workout-management-service/blob/main/scripts/dynamodb/create-table.sh)
 
-Before our action job can sucessfully run the test we will need to run few set-up steps:
+Once these steps are complete, we can run `go test -v ./...` to execute our tests.
 
-- Get the repo code into the action runner using the [actions/checkout@v4](https://github.com/actions/checkout)
-- Install go into our action running using the [actions/setup-go@v5](https://github.com/actions/setup-go)
-- Run docker compose to get the dynamodb db up and running using regular bash command `docker compose up`
-- Ensure the tables required for the unit test are created in the dynamodb by running the create-table script under [scripts/dynamodb/create-table.sh](https://github.com/SamirMarin/workout-management-service/blob/main/scripts/dynamodb/create-table.sh)
-
-once we have run these steps we should then be able to successfully run `go -v test ./...`
-
-putting it all together into the test workflow:
+Putting it all together into the test workflow definition:
 
 ```yaml
 name: test
@@ -73,19 +74,29 @@ jobs:
         uses: actions/checkout@v4
       - name: set-up go
         uses: actions/setup-go@v5
-      - name: Run docker compose
-        run: docker compose up -d
-      - name: Run dynamodb set-up scripts
-        run: ./scripts/dynamodb/create-table.sh
+        with:
+          go-version-file: go.mod
+          check-latest: true
+      - name: docker compose
+        run: |
+          docker compose up -d
         env:
-          AWS_ACCESS_KEY_ID: test
-          AWS_SECRET_ACCESS_KEY: test
+          DOCKER_COMPOSE_COMMAND_OPTS: "-inMemory"
       - name: test
         run: |
+          ./scripts/dynamodb/create-table.sh
           go test -v ./...
         env:
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
+          AWS_DEFAULT_REGION: 'us-west-2'
+          DYNAMODB_LOCAL_ENDPOINT: "http://localhost:8000"
 ```
 
-lets now commit this and push up to our branch, we can validate it worked by referencing the github actions consule.
+Commit and push this to your branch, and then validate its success through the GitHub Actions console, ensuring the go test command executes as expected.
+
+### Workflow Steps Explained
+- Checkout Step: Retrieves the latest code from the repository into our GitHub runner.
+- Setup-Go: Ensures that Go is installed in the GitHub runner, using the version specified in go.mod.
+- Docker Compose: Launches a local DynamoDB instance required for our tests. It's set to run in memory mode during the tests to ensure a clean, isolated environment and to avoid file system dependencies in the action runner.
+- Test: This step ensures that the required tables are set up in the local DynamoDB instance by running the create-table.sh script. It then runs our unit tests using `go test -v ./....`
