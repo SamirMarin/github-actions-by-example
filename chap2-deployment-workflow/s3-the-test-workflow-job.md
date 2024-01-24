@@ -1,10 +1,10 @@
-# The test workflow
-The test workflow is an essential component of our CI/CD pipeline, designed to preserve the integrity and reliability of our services by automatically executing a suite of unit and integration tests. These tests are activated upon every Pull Request (PR) creation or merge into the main branch.
+# The test workflow job
+The test workflow job is an essential component of our CI/CD pipeline, designed to preserve the integrity and reliability of our services by automatically executing a suite of unit and integration tests. These tests are activated upon every Pull Request (PR) creation or merge into the main branch.
 
-## Creating the workflow
-Given the structural resemblance between our services, namely the workout-management-service and the user-management-service, the test workflow for each will be quite similar. Therefore, we'll focus on the implementation details for one service, understanding that the process for the other would be almost identical.
+## Creating the workflow job
+Given the structural resemblance between our services, namely the workout-management-service and the user-management-service, the test workflow job for each will be quite similar. Therefore, we'll focus on the implementation details for one service, understanding that the process for the other would be almost identical.
 
-The objective of the test workflow is to automatically execute `go test -v ./...` every time a PR is created or merged into the service repositories.
+The objective of the test workflow job is to automatically execute `go test -v ./...` every time a PR is created or merged into the service repositories.
 
 ### Setting up the Workflow File
 We start by creating a test.yaml workflow file under the .github/workflows/ directory in the workout-management-service repository:
