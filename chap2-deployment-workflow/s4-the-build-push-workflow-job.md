@@ -7,7 +7,7 @@ Before diving into the workflow job, it's crucial to comprehend the foundational
 1. Docker Image: This is essentially the blueprint or recipe for your application. It is a lightweight, standalone, and executable package that bundles everything necessary to run your software. This includes not just your code, but also the runtime, system tools, libraries, and settings.
 2. Docker Container: When a Docker image is executed, it becomes a container. Think of the container as the live, running instance of the image. Containers encapsulate and run your application, isolating it from the underlying system and other containers. This ensures consistency across different environments, as the container runs the same regardless of where it's deployed.
 
-## Dockerfile
+### Dockerfile
 To implement the build and push workflow job, we need to have a Dockerfile in our repository.
 
 The Dockerfile is a crucial component for containerizing your service. It defines the steps to assemble the Docker image. Let's make a Dockerfile and break down the contents of the file
@@ -78,3 +78,82 @@ Stage 2: Preparing the Runtime Image
 
 By using multiple stages, separating the build environment from the runtime environment. We ensure a cleaner, more secure final image, as it contains only what's necessary to run the application.
 
+## Creating the build-and-push workflow job
+Given the structural resemblance between our services, namely the workout-management-service and the user-management-service, the test workflow job for each will be quite similar. Therefore, we'll focus on the implementation details for one service, understanding that the process for the other would be almost identical.
+
+The objective of the build-and-push workflow job is build the service container image and push it to an image registry in our case the github package docker registry. To do this in very simplistic terms we want our job to run:
+- `docker build`
+- `docker push`
+
+### Creating the workflow job
+
+Let's utilize the same file we used for the test workflow job, but lets rename the file:
+
+```yaml
+mv .github/workflows/test.yaml .github/workflows/test-build-and-push.yaml
+```
+
+We will configure the build-and-push job to execute only after the test job has successfully completed. To facilitate this process, we will utilize the docker/build-and-push action from the community actions library.
+
+```yaml
+name: test, build and push
+
+on:
+   push:
+      branches:
+         - main
+
+   pull_request:
+      branches:
+         - main
+
+jobs:
+   test:
+      runs-on: ubuntu-latest
+      steps:
+         - name: checkout
+           ...
+
+   build-and-push:
+      needs: [test]
+      runs-on: ubuntu-latest
+      steps:
+         - name: checkout
+           uses: actions/checkout@v4
+         - name: Docker meta
+           id: meta
+           uses: docker/metadata-action@v5
+           with:
+              images: ghcr.io/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}
+              tags: |
+                 type=sha,prefix=,format=long
+                 type=ref,event=branch
+                 type=ref,event=pr
+         - name: Set up QEMU
+           uses: docker/setup-qemu-action@v3
+         - name: Set up Docker Buildx
+           uses: docker/setup-buildx-action@v3
+         - name: Login to Github Container Registry
+           uses: docker/login-action@v3
+           with:
+              registry: ghcr.io
+              username: ${{ github.actor }}
+              password: ${{ secrets.GITHUB_TOKEN }}
+         - name: Build and push
+           uses: docker/build-push-action@v5
+           with:
+              push: ${{ github.event_name != 'pull_request' }}
+              tags: ${{ steps.meta.outputs.tags }}
+              labels: ${{ steps.meta.outputs.labels }}
+
+```
+
+Overview of Each Step in the Build-and-Push Job:
+- Checkout Repository: Retrieves the repository's code
+- Docker Metadata: Generates tags and labels for the Docker image
+- Setup QEMU: Prepares the runner for cross-platform builds, enabling the creation of images for multiple architectures.
+- Setup Docker Buildx: Initializes Docker Buildx for advanced build capabilities, including support for multi-platform images.
+- Login to GitHub Container Registry: Authenticates with the GitHub Container Registry, allowing for the image to be pushed.
+- Build and Push: Builds the Docker image and uploads it to the registry, making it available to anyone with the proper permissions.
+
+When running this action you may run into a permissions issue. To resolve this, you will need to give the repos GITHUB_TOKEN the correct permissions. To do this, navigate to the repository's settings->actions->workflow permissions and enable the write permission for the GITHUB_TOKEN.
