@@ -49,6 +49,18 @@ Create Tables: Ensure the required tables are created in the local DynamoDB inst
 - Setup-Go: Install Go in the action runner using the [actions/setup-go@v5](https://github.com/actions/setup-go)
 - Docker Compose: Launch the local DynamoDB instance needed for the tests using `docker compose up`
 - Create Tables: Ensure the required tables are created in the local DynamoDB instance by executing [scripts/dynamodb/create-table.sh](https://github.com/SamirMarin/workout-management-service/blob/main/scripts/dynamodb/create-table.sh)
+In order to ensure we don't run the create command prior to the DB being ready we will update the create-table.sh script to include a wait for DynamoDB Local to become ready step.
+Add the following to the create-table.sh script above the create table command:
+```bash
+#!/bin/bash
+echo "Waiting for DynamoDB Local to be ready..."
+# Wait for DynamoDB Local to become ready
+until aws dynamodb list-tables --endpoint-url http://localhost:8000 --region us-west-2 > /dev/null 2>&1; do
+    echo "DynamoDB Local is not ready yet..."
+    sleep 5
+done
+echo "DynamoDB Local is ready."
+```
 
 Once these steps are complete, we can run `go test -v ./...` to execute our tests.
 
