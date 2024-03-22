@@ -356,8 +356,8 @@ func NewClient(tableName string) *Client {
 		svc = dynamodb.New(sess, &aws.Config{
 			Endpoint: aws.String(localEndpoint),
 			Region:   aws.String("us-west-2"),
-			// provide dummy credentials when connecting to DynamoDB local
-			Credentials: credentials.NewStaticCredentials("dummy", "dummy", ""),
+			// provide test credentials when connecting to DynamoDB local
+			Credentials: credentials.NewStaticCredentials("test", "test", ""),
 			// Disable SSL for local non-production use
 			DisableSSL: aws.Bool(true),
 		})
