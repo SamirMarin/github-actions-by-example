@@ -14,6 +14,13 @@ Welcome to "GitHub Actions by Example", a step-by-step tutorial to master GitHub
 - section2: GitHub Actions terminology
 - section3: Build a simple but useful GitHub Actions workflow
 
+### Chap2: The deployment workflow
+- section1: Introduction to the deployment workflow
+- section2: Services to deploy
+- section3: The test workflow job
+- section4: The build workflow job
+- section5: The deploy workflow job
+
 ## Work in Progress
 This resource is continually being expanded and updated. More chapters will be added in the future to cover more aspects of GitHub Actions. Please stay tuned for updates!
 
