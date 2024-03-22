@@ -536,7 +536,7 @@ Add the following configuration to docker-compose.yaml:
 version: '3.8'
 services:
   dynamodb-local:
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    command: "-jar DynamoDBLocal.jar ${DOCKER_COMPOSE_COMMAND_OPTS:-sharedDb -dbPath ./data}"
     image: "amazon/dynamodb-local:latest"
     container_name: dynamodb-local
     ports:
