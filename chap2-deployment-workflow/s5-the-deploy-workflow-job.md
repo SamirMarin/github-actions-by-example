@@ -41,7 +41,72 @@ lets place this file under the deploy/ directory in our repository:
 
 ```bash
 mkdir -p deploy
-touch deploy/workout-management-service-deployment.yaml
+touch deploy/deployment.yaml
 ```
+Let commit this file to main branch.
 
 ## Creating the deploy workflow job
+Let's utilize the same file we used for the test workflow job, but lets rename the file:
+
+```yaml
+mv .github/workflows/test-build-and-push.yaml .github/workflows/test-build-deploy.yaml
+```
+
+Let also rename the build-and-push job to 'build' to keep naming simple. We will configure the deploy to job to execute only after the build job has successfully completed.
+
+### Purpose of the Deploy Job
+The deploy job's primary function is to ensure our deployment configuration file (deploy/deployment.yaml) accurately points to the Docker image tag generated during the build process.
+
+To facilitate this update, we'll leverage the fjogeleit/yaml-update-action community action. This powerful tool not only updates our deployment.yaml with the latest Docker tag but also automates the creation of a pull request against the main branch to implement this change.
+
+```yaml
+  name: test build deploy
+
+  on:
+    push:
+      branches:
+        - main
+
+    pull_request:
+      branches:
+        - main
+
+  jobs:
+    test:
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout
+          ...
+          
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout
+          ...
+    
+    deploy:
+      needs: [build]
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout
+          uses: actions/checkout@v4
+        - name: Update deployment.yaml
+          uses: fjogeleit/yaml-update-action@v0.14.0
+          with:
+            valueFile: 'deploy/deployment.yaml'
+            propertyPath: 'spec.template.spec.containers[0].image'
+            value: ghcr.io/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}:${{ github.sha }}
+            commitChange: ${{ github.event_name != 'pull_request' }}
+            targetBranch: main
+            masterBranchName: main # needed when default branch is not master
+            createPR: ${{ github.event_name != 'pull_request' }}
+            branch: 'deploy'
+            token: ${{ secrets.GITHUB_TOKEN }}
+            message: 'Update Image Version to: ${{ github.sha }}'
+```
+
+Overview of Each Step in the Build-and-Push Job:
+- Checkout Step: Fetch the repository code into the action runner using actions/checkout@v4.
+- Update deployment.yaml: Here, the fjogeleit/yaml-update-action is tasked with modifying the deployment.yaml to reference the newest Docker image tag. It then proceeds to create a pull request with this update, promoting seamless integration and deployment of the latest service version.
+
+Before this action can successfully create a PR you will need to allow actions to create PRs in the repository settings. To do this go to setting->Actions->General->Workflow permissions and select 'Allow GitHub Actions to create and approve pull requests'.
