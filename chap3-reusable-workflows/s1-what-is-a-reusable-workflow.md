@@ -20,14 +20,14 @@ Let's jump right into what it takes to define a reusable workflow to make the co
 
 First, all reusable workflows must be defined with:
 
-```
+```yaml
 on:
   workflow_call:
 ```
 
 ### inputs
 
-Since reusable workflows are like functions, they can take inputs. Inputs give us control over how to differentiate between the different workflows that call the reusable workflow. There are other ways to control this, but we will cover them later.
+Since reusable workflows are like functions, they can take inputs. Inputs give us control over how to differentiate between the different workflows that call the reusable workflow.
 
 ```yaml
 on:
@@ -54,9 +54,9 @@ on:
         required: true
 ```
 
-At this point, we can start defining the workflow as we would define any regular workflow, with the difference that we can use inputs passed by the calling workflow.
+At this point, we can start defining the workflow as we would define any regular workflow, with the difference that we can use the inputs/secrets passed by the calling workflow.
 
-```
+```yaml
 name: Print Info
 
 on:
