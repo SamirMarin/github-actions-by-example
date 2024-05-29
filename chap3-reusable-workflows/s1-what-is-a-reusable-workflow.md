@@ -83,3 +83,10 @@ jobs:
         run: |
           echo ${{ secrets.docker-secret }} this value does not show because it is a secret.
 ```
+
+## Where do reusable workflows live?
+Reusable workflows can live anywhere. For example, you can define them in the same repository that calls them. However, since the goal is to reuse these workflows across multiple repositories, we will define them in a separate repository.
+
+Let's create a new repository called github-by-example-reusable-workflows. In the next section, we will start defining the workflows we created in Chapter 2 as reusable workflows.
+
+
