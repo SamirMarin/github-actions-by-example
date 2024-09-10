@@ -1,0 +1,15 @@
+# Table of contents
+
+* [GitHub Actions by Example](README.md)
+* [chap1-intro](chap1-intro/README.md)
+  * [Introducing GitHub Actions](chap1-intro/s1-what-is-github-actions.md)
+  * [Terminology](chap1-intro/s2-terminology.md)
+  * [Building a workflow](chap1-intro/s3-build-a-workflow.md)
+* [chap2-deployment-workflow](chap2-deployment-workflow/README.md)
+  * [Workflow](chap2-deployment-workflow/s1-workflow-introduction.md)
+  * [The services](chap2-deployment-workflow/s2-the-services.md)
+  * [The test workflow job](chap2-deployment-workflow/s3-the-test-workflow-job.md)
+  * [The build and push workflow job](chap2-deployment-workflow/s4-the-build-push-workflow-job.md)
+  * [The deploy workflow job](chap2-deployment-workflow/s5-the-deploy-workflow-job.md)
+* [Chap3-reusable-workflows](chap3-reusable-workflows/README.md)
+  * [What is a reusable workflow](chap3-reusable-workflows/what-is-a-reusable-workflow.md)
