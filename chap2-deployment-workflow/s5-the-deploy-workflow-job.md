@@ -1,4 +1,4 @@
-# The deploy workflow job
+# Section 5 - The deploy workflow job
 In this section, we address the deployment workflow job, a crucial part of our CI/CD pipeline designed for deploying our service. Triggered upon the successful completion of the build-and-push job, this job takes the reins to roll out the latest version of our service.
 
 ## Understanding Deployment in Context

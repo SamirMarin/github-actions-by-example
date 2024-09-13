@@ -1,4 +1,4 @@
-# The test workflow job
+# Section 3 - The test workflow job
 The test workflow job is an essential component of our CI/CD pipeline, designed to preserve the integrity and reliability of our services by automatically executing a suite of unit and integration tests. These tests are activated upon every Pull Request (PR) creation or merge into the main branch.
 
 ## Creating the workflow job

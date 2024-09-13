@@ -1,4 +1,4 @@
-# Workflow
+# Section 1 - Workflow
 In this chapter, we will delve deeply into GitHub Action workflows by examining a multi-job deployment workflow. This workflow encompasses several key processes: running tests to validate the service, building a Docker image, uploading this image to the GitHub registry, and ultimately initiating the deployment process.
 
 ## Services we will deploy

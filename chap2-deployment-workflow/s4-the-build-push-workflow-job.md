@@ -1,4 +1,4 @@
-# The build and push workflow job
+# Section 4 - The build and push workflow job
 The build and push workflow job plays a pivotal role in our CI/CD pipeline by automating the creation and distribution of our service's Docker image. This job ensures that the latest version of our service is containerized and ready for deployment.
 
 ## Docker and Its Components

@@ -1,4 +1,4 @@
-# Introducing GitHub Actions
+# Section 1 - Introducing GitHub Actions
 GitHub Actions is an automation solution framework built within GitHub's ecosystem.
 
 ## Automation platform

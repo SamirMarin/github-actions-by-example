@@ -1,4 +1,4 @@
-# Terminology
+# Section 2 - Terminology
 Before diving deeper into more complex GitHub Action workflows, let's take a moment to define some of the key terms used in GitHub Actions.
 
 ## Workflow

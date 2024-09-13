@@ -1,4 +1,4 @@
-# What is a reusable workflow
+# Section 1 - What is a reusable workflow
 
 A reusable workflow allows us to define a workflow that can be called from another workflow. We can think of it as a function. For example, referencing the deploy workflow we created in the previous chapter, if we define it as a reusable workflow, we won't need to define the workflow in each repository that requires it. Instead, we can call the reusable workflow with some given inputs.
 
