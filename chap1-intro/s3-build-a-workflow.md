@@ -1,4 +1,4 @@
-# Section 3 - Building a workflow
+# Building a workflow
 Now that we have a basic understanding of GitHub Actions, let's build a common and useful workflow. This workflow will automatically create a GitHub release for us.
 
 This workflow is beneficial for any project that relies on GitHub releases to distribute software. For example, if you're developing your own community GitHub action, you can use this workflow to automatically create a release for your action.

@@ -1,4 +1,4 @@
-# Section 2 - The services
+# The services
 To illustrate the deployment workflow, we will develop two basic Golang HTTP services: the [workout-management-service](https://github.com/SamirMarin/workout-management-service) and the [user-management-service](https://github.com/SamirMarin/user-management-service).
 
 Both services have similar implementation details; therefore, we will focus primarily on the implementation of one service, the workout-management-service.

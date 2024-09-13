@@ -1,4 +1,4 @@
-# Section 2 - The test reusable workflow
+# Section 2 the test reusable workflow
 
 The test reusable workflow will function like the test workflow we wrote in Chapter 2, Section 3, with the difference that this workflow will be reusable and can be called from another repository.
 
