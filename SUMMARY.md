@@ -12,5 +12,5 @@
   * [The build and push workflow job](chap2-deployment-workflow/s4-the-build-push-workflow-job.md)
   * [The deploy workflow job](chap2-deployment-workflow/s5-the-deploy-workflow-job.md)
 * [Chap3-reusable-workflows](chap3-reusable-workflows/README.md)
-  * [What is a reusable workflow](chap3-reusable-workflows/what-is-a-reusable-workflow.md)
-  * [Section 2 the test reusable workflow](chap3-reusable-workflows/section-2-the-test-reusable-workflow.md)
+  * [Section 1 - What is a reusable workflow](chap3-reusable-workflows/section-1-what-is-a-reusable-workflow.md)
+  * [Section 2 - The test reusable workflow](chap3-reusable-workflows/section-2-the-test-reusable-workflow.md)
