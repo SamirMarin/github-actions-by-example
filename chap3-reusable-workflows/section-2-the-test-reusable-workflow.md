@@ -26,14 +26,27 @@ To refactor the test workflow job to be a reusable workflow, we need to make the
   * The idea is to make the reusable workflow as flexible as possible, but there is a trade-off. Given that the reusable workflow may only be used for a given type of service, its flexibility can be tied to this. For example, we are assuming all our services are in Go, so we default to installing Go in the workflow.
   * In our case, we added the following inputs and provided default values for all these inputs, giving the caller the flexibility to override the defaults only if needed:
     * docker-compose-command: the Docker Compose command to run
-      * docker-compose-command-opts: the Docker Compose command options
-      * test-script: the test script to run
-      * aws-region: the AWS region
-      * dynamodb-local-endpoint: the DynamoDB local endpoint
-      * test-aws-access-key-id: the AWS access key ID
-      * test-aws-secret-access-key: the AWS secret access key
+      * defaults to: `docker compose up -d`
+    * docker-compose-command-opts: the Docker Compose command options
+      * defaults to: `-inMemory`
+    * test-script: the test script to run
+      *   defaults to:&#x20;
+
+          ```
+          ./scripts/dynamodb/create-table.sh
+          go test -v ./...
+          ```
+    * aws-region: the AWS region:
+      * defaults to: `us-west-2`
+    * dynamodb-local-endpoint: the DynamoDB local endpoint:
+      * defaults to: [http://localhost:8000](http://localhost:8000)
+    * test-aws-access-key-id: the AWS access key ID
+      * defaults to: `test`
+    * test-aws-secret-access-key: the AWS secret access key
+      * defaults to: `test`
 * Use inputs in the workflow job
-  * Instead of hardcoding commands like `docker compose up -d` directly in the workflow step, we define it as an input. For example, we set a default value for the Docker Compose command as `docker compose up -d`, but in the actual step, we call the input using `${{ inputs.docker-compose-command }}`. This approach allows any calling workflow to override the default command if needed.
+  * Here we utilize all the inputs defined in the workflow
+    * For example: Instead of hardcoding commands like `docker compose up -d` directly in the workflow step, we use the input value, `${{ inputs.docker-compose-command }}`. This approach allows any calling workflow to override the default input command if required.
 
 The refactored test reusable workflow:
 

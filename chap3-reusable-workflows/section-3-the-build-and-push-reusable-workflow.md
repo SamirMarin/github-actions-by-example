@@ -1,6 +1,6 @@
 # Section 3 - The build and push reusable workflow
 
-Similarly to the reusable test workflow, the build and push workflow will closely resemble the one we created in Chapter 2, Section 4. The main difference is that this new workflow will be reusable, allowing it to be called from other repositories.
+Similarly to the reusable test workflow, the build and push workflow will closely resemble the one we created in Chapter 2, Section 4. The main difference is that this new workflow job will be reusable, allowing it to be called from other repositories.
 
 ## Creating the reusable workflow
 
@@ -16,7 +16,25 @@ Next, we’ll copy the build and push workflow job from one of our service repos
 
 To make the build and push job reusable, we’ll follow a similar process to what we did with the test job. Since the job is now part of an already reusable workflow file, we just need to add the necessary inputs for the build and push job and use these inputs within the job.
 
-* Inputs required for the build and push job
+* We will added the following inputs and provided default values for all these inputs
+  * image-owner:  the repository owner (the ORG or username)
+    * defaults to: `${{ github.event.repository.owner.login }}`
+  * image-name: the image name
+    * defaults to: `${{ github.event.repository.name }}`
+  * build-tags: the build tags
+    *   defaults to:&#x20;
+
+        ```
+              type=sha,prefix=,format=long
+              type=ref,event=branch
+              type=ref,event=pr
+        ```
+  * build-push: whether to push the image after the build
+    *   defaults to:&#x20;
+
+        ```
+        ${{ github.event_name != 'pull_request' }}
+        ```
 
 
 
