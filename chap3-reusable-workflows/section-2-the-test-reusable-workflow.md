@@ -8,7 +8,7 @@ We will reference the logic we used in Chapter2, Section 3 - The test workflow a
 
 ### Setting up the reusable workflow files
 
-We will start by creating a reusable-test.yaml file under the .github/workflows/ directory in the [github-actions-by-example-reusable-worflows](https://github.com/SamirMarin/github-actions-by-example-reusable-workflows) repo.
+We'll start by creating a reusable-test.yaml file under the .github/workflows/ directory in the [github-actions-by-example-reusable-worflows](https://github.com/SamirMarin/github-actions-by-example-reusable-workflows) repo.
 
 ```bash
 mkdir -p .github/workflows/
@@ -17,38 +17,40 @@ touch .github/workflows/reusable-test.yaml
 
 ### Refactoring the test workflow
 
-Next, we will copy the test workflow job from one of the service repositories. Let's use the [test job](https://github.com/SamirMarin/user-management-service/blob/8ea4779ec3beb9368f99953aaf3b7fb02c09ef54/.github/workflows/test-build-deploy.yaml#L13-L36) from user-management-service test-build-and-deploy workflow and refactor it to make it reusable.
+Next, we'll copy the test workflow job from one of our service repositories. In this example, we take the [`test` job](https://github.com/SamirMarin/user-management-service/blob/8ea4779ec3beb9368f99953aaf3b7fb02c09ef54/.github/workflows/test-build-deploy.yaml#L13-L36) from the `user-management-service`'s `test-build-and-deploy` workflow and refactor it to make it reusable.
 
-To refactor the test workflow job to be a reusable workflow, we need to make the following changes:
+To refactor the test job into a reusable workflow, we make the following changes:
 
-* Update the trigger to `workflow_call`.
-* Define the inputs that the calling workflow can pass to the reusable workflow.
-  * The idea is to make the reusable workflow as flexible as possible, but there is a trade-off. Given that the reusable workflow may only be used for a given type of service, its flexibility can be tied to this. For example, we are assuming all our services are in Go, so we default to installing Go in the workflow.
-  * In our case, we added the following inputs and provided default values for all these inputs, giving the caller the flexibility to override the defaults only if needed:
-    * docker-compose-command: the Docker Compose command to run
-      * defaults to: `docker compose up -d`
-    * docker-compose-command-opts: the Docker Compose command options
-      * defaults to: `-inMemory`
-    * test-script: the test script to run
-      *   defaults to:&#x20;
+1. Update the trigger to `workflow_call`.
+2. Define the inputs that the calling workflow can pass to the reusable workflow.
 
-          ```
-          ./scripts/dynamodb/create-table.sh
-          go test -v ./...
-          ```
-    * aws-region: the AWS region:
-      * defaults to: `us-west-2`
-    * dynamodb-local-endpoint: the DynamoDB local endpoint:
-      * defaults to: [http://localhost:8000](http://localhost:8000)
-    * test-aws-access-key-id: the AWS access key ID
-      * defaults to: `test`
-    * test-aws-secret-access-key: the AWS secret access key
-      * defaults to: `test`
-* Use inputs in the workflow job
-  * Here we utilize all the inputs defined in the workflow
-    * For example: Instead of hardcoding commands like `docker compose up -d` directly in the workflow step, we use the input value, `${{ inputs.docker-compose-command }}`. This approach allows any calling workflow to override the default input command if required.
+The goal is to make the reusable workflow as flexible as possible, though there is a trade-off. Since this reusable workflow may only be used for a specific type of service, we can limit its flexibility accordingly. For instance, we're assuming all our services are written in Go, so by default, we include Go installation steps in the test workflow job.
 
-The refactored test reusable workflow:
+We'll add the following inputs and provided default values, allowing the caller to override these defaults only if needed:
+
+* docker-compose-command: the Docker Compose command to run
+  * defaults to: `docker compose up -d`
+* docker-compose-command-opts: the Docker Compose command options
+  * defaults to: `-inMemory`
+* test-script: the test script to run
+  *   defaults to:&#x20;
+
+      ```
+      ./scripts/dynamodb/create-table.sh
+      go test -v ./...
+      ```
+* aws-region: the AWS region:
+  * defaults to: `us-west-2`
+* dynamodb-local-endpoint: the DynamoDB local endpoint:
+  * defaults to: [http://localhost:8000](http://localhost:8000)
+* test-aws-access-key-id: the AWS access key ID
+  * defaults to: `test`
+* test-aws-secret-access-key: the AWS secret access key
+  * defaults to: `test`
+
+We'll utilize all the inputs defined in the workflow. For example, instead of hardcoding commands like `docker compose up -d` directly in the workflow, we use the input value `${{ inputs.docker-compose-command }}`, which allows the calling workflow to override the default command if needed.
+
+Here is the refactored test job in the reusable workflow:
 
 ```yaml
 name: Test
@@ -120,4 +122,4 @@ jobs:
           DYNAMODB_LOCAL_ENDPOINT: ${{ inputs.dynamodb-local-endpoint }}
 ```
 
-Commit and push the changes to the reusable workflows repository. In our case, we will push the changes to the [github-actions-by-example-reusable-workflows](https://github.com/SamirMarin/github-actions-by-example-reusable-workflows) repository.
+Finally, we commit and push the changes to the reusable workflows repository. In our case, we’ll push the updates to the [`github-actions-by-example-reusable-workflows`](https://github.com/SamirMarin/github-actions-by-example-reusable-workflows) repository.
