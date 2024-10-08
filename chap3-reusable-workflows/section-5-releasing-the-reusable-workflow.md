@@ -1,37 +1,35 @@
 # Section 5 - Releasing the reusable workflow
 
-Now that we have defined a reusable `test-build-deploy` workflow, we will create a workflow to release this reusable workflow. This will allow us to version the `test-build-deploy` reusable workflow, ensuring that each workflow using it has a stable version to reference.
+Now that we've defined a reusable `test-build-deploy` workflow, the next step is to create a release workflow. This allows us to version the reusable workflow, ensuring that each workflow referencing it has a stable version to rely on.
 
-To accomplish this, we will create a release workflow similar to the example shown in Chapter 1, Section 3: Building a Workflow. The difference is that we will adapt this workflow to handle multiple releases per repository. This approach enables us to host multiple reusable workflows within the same repository.
+To achieve this, we will set up a release workflow similar to the example in Chapter 1, Section 3: Building a Workflow. However, this workflow will be adapted to handle multiple releases within a single repository, allowing us to host and release multiple reusable workflows.
 
 ## Creating the Release Workflow
 
-The process for creating the release workflow will be quite similar to what we did in Chapter 1, Section 3. However, instead of creating a single release, we will set up a system that creates a release for each reusable workflow in the repository.
+The release workflow will be similar to what we did in Chapter 1, Section 3. However, instead of handling a single release, we will set up a system that releases each reusable workflow in the repository independently.
 
-Currently, the [`github-actions-by-example-reusable-workflows`](https://github.com/SamirMarin/github-actions-by-example-reusable-workflows) repository only hosts one reusable workflow, the `test-build-deploy` workflow. However, we want to configure the release workflow in a way that allows it to handle any new reusable workflows added to the repository, ensuring they are released independently.
+Currently, the [github-actions-by-example-reusable-workflows](https://github.com/SamirMarin/github-actions-by-example-reusable-workflows) repository only hosts the `test-build-deploy` workflow, but we want to ensure the release workflow can handle future workflows as well. This will prevent the need to create separate release workflows for each reusable workflow, which would be inefficient.
 
-One approach would be to add a separate release workflow for each new reusable workflow. However, this is inefficient and cumbersome. A better solution would be to handle the release of multiple reusable workflows within a single workflow file.
+In traditional programming, repetitive actions are handled with loops, and GitHub Actions provides a similar capability using the [matrix strategy](https://docs.github.com/en/enterprise-server@3.14/actions/writing-workflows/choosing-what-your-workflow-does/running-variations-of-jobs-in-a-workflow). By using a matrix, we can automate the release process for each reusable workflow using a single workflow file.
 
-In traditional programming, when we need to repeat an action, we typically use a `for` loop. GitHub Actions provides a similar capability through the [**matrix strategy**](https://docs.github.com/en/enterprise-server@3.14/actions/writing-workflows/choosing-what-your-workflow-does/running-variations-of-jobs-in-a-workflow). By utilizing a matrix, we can automate the release process for each reusable workflow in the repository using a single release workflow.
+The release process will consist of two jobs:
 
-The release process will occur in two jobs:
-
-* **Job 1: `workflows-to-release`** – This job builds the matrix values of the reusable workflows that are ready for release.
-* **Job 2: `release`** – This job releases the reusable workflows that have new changes.
+* **Job 1: `workflows-to-release`** – This job builds the matrix values (a list) of the reusable workflows ready for release.
+* **Job 2: `release`** – This job performs the release of the reusable workflows that have new changes.
 
 ### Workflows to Release: The Matrix Job
 
 First, let's create `release.yaml` under the `.github/workflows/` directory in the `github-`[`actions-by-example-reusable-workflows`](https://github.com/SamirMarin/github-actions-by-example-reusable-workflows) repository.
 
-Since this is a release workflow, we will configure triggers to ensure the workflow runs on `push` and `pull_request` events targeting the `main` branch.
+Since this is a release workflow, we will configure triggers so the workflow runs on `push` and `pull_request` events targeting the `main` branch.
 
-The matrix job will monitor for any changes to reusable workflows. If a reusable workflow file is modified, we will extract the name of the file and generate matrix values—a list of these names. These values will then be used in the matrix strategy of the release job.
+The matrix job will monitor for any changes to reusable workflows. If a reusable workflow file is modified, we will extract the name of the file and generate matrix values (a list of workflow names) to use in the matrix strategy of the release job.
 
-When creating matrix values in GitHub Actions, you are essentially generating a list (or array) that can be iterated over and utilized within a job. For our use case, we will create matrix values consisting of a list of strings—those strings being the names of the reusable workflows that are ready for release. These values will later be passed into a matrix strategy in the release job.
+When creating matrix values, you are essentially generating an array that can be iterated over. For our use case, this array will contain the names of the reusable workflows ready for release. These values will be passed into the matrix strategy of the release job.
 
-Since the reusable workflow repository may also contain non-reusable workflow files, we will ensure that all reusable workflows are prefixed with `reusable-`. This way, we can easily filter out non-reusable workflows and focus only on those that need to be released.
+To distinguish reusable workflows from other files, we'll ensure that all reusable workflows are prefixed with `reusable-`, allowing us to filter only the relevant files.
 
-**Approach for the Job:**
+Here’s how the job will work:
 
 1. Identify all the files that have changed.
 2. If a changed file is prefixed with `reusable-`, extract the file name.
@@ -105,6 +103,12 @@ jobs:
           fi
           echo "Changed Workflows: $changed"
           echo "values=${changed}" >> $GITHUB_OUTPUT
+          
+          # Trim any leading/trailing spaces or newlines from the final result
+          trimmed_changed=$(echo "$changed" | jq -c .)
+
+          echo "Changed Workflows: $trimmed_changed"
+          echo "values=$trimmed_changed" >> $GITHUB_OUTPUT
 ```
 
 **Let's walk through each step:**
@@ -120,3 +124,101 @@ jobs:
 Lastly, we place the list of changed workflows (or actions) into  `job.outputs.names` so that it can be utilized in the matrix strategy for the release job.
 
 ### The Release job
+
+This job will be very similar to the one in Chapter 1, Section 3. However, there are two main differences:
+
+1. The strategy will be a matrix, allowing us to release each workflow independently.
+2. We will also create a major version tag (`v1`) for each release. This will allow users to track the major version and avoid frequent updates when there are only minor or patch changes. For example, if we release version `v1.0.0`, we will also create a `v1` tag. If we later release a patch version `v1.0.1`, we will override the `v1` tag with this version.
+
+Here is the release job:
+
+```yaml
+...
+release:
+    runs-on: ubuntu-latest
+    if: ${{ needs.workflows-to-release.outputs.names != '[]' }}
+    needs: [workflows-to-release]
+    strategy:
+      fail-fast: false
+      matrix: 
+        workflows: ${{ fromJson(needs.workflows-to-release.outputs.names) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get bump version from PR labels
+        id: bump_label
+        uses: SamirMarin/get-labels-action@v0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          label_key: bump
+          label_value_order: "patch,minor,major,ignore"
+          default_label_value: patch
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          fetch_all_tags: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: ${{ steps.bump_label.outputs.label_value }}
+          tag_prefix: ${{ matrix.workflows }}-v
+          dry_run: ${{ github.event_name == 'pull_request' }}
+
+      - name: Create major version tag value
+        id: major_tag_version
+        run: |
+          major_version=$(echo ${{ steps.tag_version.outputs.new_tag }} | cut -d "." -f 1)
+          echo "value=${major_version}" >> $GITHUB_OUTPUT
+
+      - name: Override or push major tag
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: ${{ steps.major_tag_version.outputs.value }}
+          force_push_tag: true
+
+      - name: Comment on PR
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            **The current major Release:** 🚀 ${{ steps.major_tag_version.outputs.value }}
+            **Next Release:** 🚀 ${{ steps.tag_version.outputs.new_tag }}
+
+      - name: Create or update major GitHub release
+        uses: ncipollo/release-action@v1
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          tag: ${{ steps.major_tag_version.outputs.value }}
+          name: Major Release ${{ steps.major_tag_version.outputs.value }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+          allowUpdates: true
+          replacesArtifacts: true
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+```
+
+Lastly, since we are commenting on pull requests in the "Comment on PR" step, we need to ensure that the workflow has write permissions for pull requests. We can add this at the top of the workflow file as follows:
+
+```yaml
+permissions:
+  pull-requests: write
+```
+
+#### Explanation of Steps
+
+* **Matrix strategy**: Allows the release workflow to run for each reusable workflow, passing in a list of workflows to release.
+* **Get bump version from PR labels**: Extracts the version bump (e.g., patch, minor, major) based on labels, defaulting to a patch if no label is found.
+* **Bump version and push tag**: Increments the version and pushes the tag.
+* **Create major version tag**: Creates a major version tag (e.g., `v1`).
+* **Override or push major tag**: Updates or creates the major tag.
+* **Comment on PR**: Comments on the pull request with the current and next release versions.
+* **Create or update major GitHub release**: Creates or updates a major GitHub release.
+* **Create a GitHub release**: Creates the GitHub release for the specific version.
