@@ -205,10 +205,11 @@ release:
           body: ${{ steps.tag_version.outputs.changelog }}
 ```
 
-Lastly, since we are commenting on pull requests in the "Comment on PR" step, we need to ensure that the workflow has write permissions for pull requests. We can add this at the top of the workflow file as follows:
+Lastly, since we are commenting on pull requests in the "Comment on PR" step, pushing tags, and creating releases, we need to ensure that the workflow has the appropriate write permissions for both pull requests and repository contents. This will allow the workflow to comment on PRs, push tags, and create releases. We can set these permissions at the top of the workflow file as follows:
 
 ```yaml
 permissions:
+  contents: write
   pull-requests: write
 ```
 
