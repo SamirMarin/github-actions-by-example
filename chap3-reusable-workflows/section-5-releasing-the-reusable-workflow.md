@@ -223,3 +223,41 @@ permissions:
 * **Comment on PR**: Comments on the pull request with the current and next release versions.
 * **Create or update major GitHub release**: Creates or updates a major GitHub release.
 * **Create a GitHub release**: Creates the GitHub release for the specific version.
+
+## Using the reusable workflow
+
+Now that we’ve successfully released our reusable workflow, let’s put it to use in our services. To demonstrate this, we’ll update the test-build-deploy.yaml workflow to reference the reusable workflow instead of duplicating its logic. As an example, we’ll update the [test-build-deploy workflow](https://github.com/SamirMarin/user-management-service/blob/main/.github/workflows/test-build-deploy.yaml) for the user-management-service.
+
+To do this, we’ll remove everything under the jobs section in the test-build-deploy.yaml workflow and reference the reusable workflow instead. Here’s how you can do it:
+
+```yaml
+name: test-build-deploy with reusable
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-build-deploy:
+    uses: samirmarin/github-actions-by-example-reusable-workflows/.github/workflows/reusable-test-build-deploy.yaml@test-build-deploy-v0
+```
+
+This setup will call the reusable workflow and execute all its jobs. In this case, we don’t need to pass any parameters because we’re fine with the default values. However, if you wanted to override a default parameter, you could do it by using the `with` keyword. For example:
+
+```yaml
+...
+uses: samirmarin/github-actions-by-example-reusable-workflows/.github/workflows/reusable-test-build-deploy.yaml@test-buil
+with:
+  image-name: user-mgmt
+```
+
+Here, the image-name parameter is overridden with the value user-mgmt, instead of using the default `${{ github.event.repository.name }}.`
+
+After committing this change, the workflow will run, and you’ll see that all three jobs defined in the reusable workflow are executed. This greatly simplifies the logic, as we no longer need to define separate workflows for each service. Instead of copy-pasting similar workflows across services, we can centralize the logic in one place and reuse it across multiple projects.
+
+You can follow the same steps to update the [workout-management-service](https://github.com/SamirMarin/workout-management-service) workflow to reference the reusable workflow in the same manner.
