@@ -17,3 +17,5 @@
   * [Section 3 - The build and push reusable workflow](chap3-reusable-workflows/section-3-the-build-and-push-reusable-workflow.md)
   * [Section 4 - The deploy reusable workflow](chap3-reusable-workflows/section-4-the-deploy-reusable-workflow.md)
   * [Section 5 - Releasing the reusable workflow](chap3-reusable-workflows/section-5-releasing-the-reusable-workflow.md)
+* [Chap4-custom-actions](chap4-custom-actions/README.md)
+  * [Section 1 - What is a custom action](chap4-custom-actions/section-1-what-is-a-custom-action.md)
