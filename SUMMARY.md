@@ -19,3 +19,4 @@
   * [Section 5 - Releasing the reusable workflow](chap3-reusable-workflows/section-5-releasing-the-reusable-workflow.md)
 * [Chap4-custom-actions](chap4-custom-actions/README.md)
   * [Section 1 - What is a custom action](chap4-custom-actions/section-1-what-is-a-custom-action.md)
+  * [Section 1 - Composite Custom Actions](chap4-custom-actions/section-1-composite-custom-actions.md)
