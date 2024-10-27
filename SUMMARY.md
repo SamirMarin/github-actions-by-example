@@ -20,3 +20,4 @@
 * [Chap4-custom-actions](chap4-custom-actions/README.md)
   * [Section 1 - What is a custom action](chap4-custom-actions/section-1-what-is-a-custom-action.md)
   * [Section 2 - Composite Custom Actions](chap4-custom-actions/section-2-composite-custom-actions.md)
+  * [Section 3 - Javascript Custom Actions](chap4-custom-actions/section-3-javascript-custom-actions.md)
