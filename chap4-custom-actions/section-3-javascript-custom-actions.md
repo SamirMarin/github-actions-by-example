@@ -265,3 +265,22 @@ If multiple values are found, we use the `label_value_order` input to specify a 
 **Set the Final Output**
 
 Finally, we set the output value using `core.setOutput("label_value", outputValue)`, making it available for other actions to use, just as we did in the composite action.
+
+## Releasing and using the Javascript Action
+
+In Chapter 1, Section 3: Building a Workflow, we created a workflow to automate the release process for this action. You can view that workflow [here](https://github.com/SamirMarin/get-labels-action/blob/main/.github/workflows/release.yaml). The full source code for the action is available in the same repository: [Get-Labels Action Repository](https://github.com/SamirMarin/get-labels-action). This action has been used throughout many examples to demonstrate label retrieval and processing.
+
+To use the action in a workflow, simply reference it in any workflow step as shown below:
+
+```yaml
+- name: Get bump version
+  id: bump_label
+  uses: SamirMarin/get-labels-action@v0
+  with:
+    github_token: ${{ secrets.GITHUB_TOKEN }}
+    label_key: bump
+    label_value_order: "patch,minor,major,ignore"
+    default_label_value: patch
+```
+
+Alternatively, we could also have placed the action in the [GitHub Actions by Example Reusable Workflows repository](https://github.com/SamirMarin/github-actions-by-example-reusable-workflows) under the actions directory and released it in the same way as the composite action.

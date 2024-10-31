@@ -148,7 +148,7 @@ You can find the full source code for the composite action here:
 
 [Get-Labels Composite Action Source](https://github.com/SamirMarin/github-actions-by-example-reusable-workflows/tree/main/.github/actions/get-labels-composite).
 
-## Releasing the Composite Action
+## Releasing and using the Composite Action
 
 As we discussed in Chapter 3, Section 5: Releasing the Reusable Workflow, we added logic to release custom actions. This logic essentially looks for any custom actions defined under the .github/actions/ directory and makes a release for them in the [github-actions-by-example-resuable-workflows](https://github.com/SamirMarin/github-actions-by-example-reusable-workflows) repository.
 
