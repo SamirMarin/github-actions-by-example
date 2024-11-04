@@ -32,7 +32,7 @@ Welcome to "GitHub Actions by Example", a step-by-step tutorial to master GitHub
 * section4: The deploy reusable workflow
 * section5: Releasing the reusable workflow
 
-Chap4: Custom Actions
+### Chap4: Custom Actions
 
 * Section1: What is a custom action
 * Section2: Composite Custom actions
