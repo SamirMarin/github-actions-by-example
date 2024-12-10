@@ -3,7 +3,7 @@
 * [GitHub Actions by Example](README.md)
 * [chap1-intro](chap1-intro/README.md)
   * [Section 1 - Introducing GitHub Actions](chap1-intro/s1-what-is-github-actions.md)
-  * [Section 2 - Terminology](chap1-intro/s2-terminology.md)
+  * [Section 2 - Terminology and Core Concepts](chap1-intro/s2-terminology.md)
   * [Section 3 - Building a workflow](chap1-intro/s3-build-a-workflow.md)
 * [chap2-deployment-workflow](chap2-deployment-workflow/README.md)
   * [Section 1 - Workflow](chap2-deployment-workflow/s1-workflow-introduction.md)
