@@ -72,7 +72,7 @@ We will cover additional properties of steps as we go through more examples. For
 
 ## Expressions
 
-GitHub Actions gives us the ability to use expressions to programmatically manage workflows and make them more dynamic. We saw examples of this in the previous section, whenever we opened double curly brackets like this: \`$\{{ \<expression \}}\`.
+GitHub Actions gives us the ability to use expressions to programmatically manage workflows and make them more dynamic. We saw examples of this in the previous section, whenever we opened double curly brackets like this: \`$\{{ \<expression> \}}\`.
 
 Expressions are commonly used for:
 
