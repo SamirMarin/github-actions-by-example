@@ -74,7 +74,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v46
 
       - name: Get changed workflows ounder /workflows
         id: changed-workflows
