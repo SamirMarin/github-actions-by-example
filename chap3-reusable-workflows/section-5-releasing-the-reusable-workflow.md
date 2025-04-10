@@ -261,3 +261,34 @@ Here, the image-name parameter is overridden with the value user-mgmt, instead o
 After committing this change, the workflow will run, and you’ll see that all three jobs defined in the reusable workflow are executed. This greatly simplifies the logic, as we no longer need to define separate workflows for each service. Instead of copy-pasting similar workflows across services, we can centralize the logic in one place and reuse it across multiple projects.
 
 You can follow the same steps to update the [workout-management-service](https://github.com/SamirMarin/workout-management-service) workflow to reference the reusable workflow in the same manner.
+
+## Quick Note: On Trusting Version Tags and Action Security
+
+In this chapter, I talked about versioning and tagging major versions (like v1, v2) this is with the goal of making it easier for users to adopt updates without needing to change their workflows every time there’s a patch or minor release. It's a common pattern in many community actions.
+
+But recent events have highlighted a risk: version tags in public GitHub Actions are not immutable.
+
+While maintainers should follow [semantic versioning](https://semver.org/) — meaning:
+
+* Patch versions (v1.1.2) shouldn’t change
+* Minor and major versions (v1, v1.1) should be backward-compatible
+
+it ultimately depends on trusting the maintainers. And in open-source, bad actors can compromise that trust.
+
+A popular action, that I reference in this chapter: [tj-actions/changed-files](https://github.com/tj-actions/changed-files), was recently compromised, this has now been addressed, but it's important to be aware of what happened.
+
+A malicious actor gained access and repointed version tags (like v45) to code that exfiltrated secrets from workflows — affecting any project that used it.
+
+Here’s a great write-up on what happened: [StepSecurity Blog: Harden Runner Detection](https://www.stepsecurity.io/blog/harden-runner-detection-tj-actions-changed-files-action-is-compromised)
+
+### What you can do:
+
+It’s all about the tradeoff between usability and security.
+
+If you’re working in sensitive environments or want to be extra cautious, the best practice is to pin actions to a specific commit SHA:
+
+```yaml
+- name: Get changed files
+  id: changed-files
+  uses: tj-actions/changed-files@<commit_sha>
+```
